@@ -21,7 +21,7 @@ Consult these guides before working on related tasks:
 - [Adding styles or using Tailwind](https://docs.astro.build/en/guides/styling/)
 - [Supporting multiple languages](https://docs.astro.build/en/guides/internationalization/)
 
-Project: ML Playground, an interactive CPSC 340 study site.
+Project: ML Playground, an interactive Machine Learning study site.
 Stack: Astro Starlight, React islands, TypeScript, MDX, KaTeX, Vitest.
 
 Rules:
