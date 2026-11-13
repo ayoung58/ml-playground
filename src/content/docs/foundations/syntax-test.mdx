@@ -1,0 +1,166 @@
+---
+title: Syntax Cheat Sheet
+description: How to write pages in this playground
+---
+
+import ScatterDemo from '../../../components/ScatterDemo';
+
+Every feature below shows the **raw source** first, then the **rendered result** right after it. Copy the source into a new page and edit.
+
+## 1. Headings, bold and italic
+
+Use `##` for a section and `###` for a subsection. The page title is the only `#` heading, and Starlight adds it from the frontmatter. The headings of this very page are live examples of `##`.
+
+```mdx
+### A subsection
+
+Plain text with **bold** for key terms and *italic* for emphasis.
+```
+
+### A subsection
+
+Plain text with **bold** for key terms and *italic* for emphasis.
+
+## 2. Tables
+
+````mdx
+| Model         | Type           | Needs scaling |
+| ------------- | -------------- | ------------- |
+| k-NN          | Instance-based | Yes           |
+| Decision tree | Tree-based     | No            |
+| Linear model  | Parametric     | Yes           |
+````
+
+| Model         | Type           | Needs scaling |
+| ------------- | -------------- | ------------- |
+| k-NN          | Instance-based | Yes           |
+| Decision tree | Tree-based     | No            |
+| Linear model  | Parametric     | Yes           |
+
+## 3. Asides
+
+Put the title in square brackets after the aside type.
+
+````mdx
+:::tip[Try it]
+Drag the slider and watch the clusters overlap.
+:::
+
+:::note[Good to know]
+Asides can contain **Markdown**, lists and `inline code`.
+:::
+
+:::caution[Watch out]
+Always split your data before you scale it.
+:::
+````
+
+:::tip[Try it]
+Drag the slider and watch the clusters overlap.
+:::
+
+:::note[Good to know]
+Asides can contain **Markdown**, lists and `inline code`.
+:::
+
+:::caution[Watch out]
+Always split your data before you scale it.
+:::
+
+## 4. Math
+
+Inline math goes between single dollar signs. Block math goes between double dollar signs on their own lines.
+
+```mdx
+The model predicts $\hat{y} = \arg\max_k \, p(k \mid x)$ for each input.
+
+$$
+H(p) = -\sum_{k=1}^{K} p_k \log p_k
+$$
+```
+
+The model predicts $\hat{y} = \arg\max_k \, p(k \mid x)$ for each input.
+
+$$
+H(p) = -\sum_{k=1}^{K} p_k \log p_k
+$$
+
+:::note[Two gotchas]
+To write a literal dollar sign, escape it as `\$`, for example costs of \$5 per unit. Curly braces in plain text must go inside code fences or backticks, because MDX treats a bare `{` as the start of a JavaScript expression.
+:::
+
+## 5. Python code with a title and a highlighted line
+
+Add `title="..."` after the language, and put line numbers in curly braces to highlight them.
+
+````mdx
+```python title="knn.py" {6}
+import numpy as np
+
+def knn_predict(X_train, y_train, x, k=3):
+    dists = np.linalg.norm(X_train - x, axis=1)
+    nearest = np.argsort(dists)[:k]
+    votes = np.bincount(y_train[nearest])
+    return int(np.argmax(votes))
+```
+````
+
+```python title="knn.py" {6}
+import numpy as np
+
+def knn_predict(X_train, y_train, x, k=3):
+    dists = np.linalg.norm(X_train - x, axis=1)
+    nearest = np.argsort(dists)[:k]
+    votes = np.bincount(y_train[nearest])
+    return int(np.argmax(votes))
+```
+
+## 6. TypeScript code with a title
+
+````mdx
+```ts title="distance.ts"
+export function euclidean(a: number[], b: number[]): number {
+  let sum = 0;
+  for (let i = 0; i < a.length; i++) sum += (a[i] - b[i]) ** 2;
+  return Math.sqrt(sum);
+}
+```
+````
+
+```ts title="distance.ts"
+export function euclidean(a: number[], b: number[]): number {
+  let sum = 0;
+  for (let i = 0; i < a.length; i++) sum += (a[i] - b[i]) ** 2;
+  return Math.sqrt(sum);
+}
+```
+
+## 7. Embedding a component
+
+Import the component at the top of the page, then use it with a `client:` directive.
+
+````mdx
+import ScatterDemo from '../../../components/ScatterDemo';
+
+<ScatterDemo client:visible />
+````
+
+<ScatterDemo client:visible />
+
+:::note[Interactive components need a client directive]
+Without a `client:` directive, Astro renders a React component to static HTML and ships no JavaScript, so sliders and buttons do nothing. Use `client:visible` to load the component when it scrolls into view, or `client:load` to load it immediately.
+:::
+
+## 8. Page template
+
+Every concept page follows the same nine steps, in this order:
+
+1. **Hook**: a question or surprising fact that makes the reader curious.
+2. **Intuition widget**: a small interactive demo to play with before any formulas.
+3. **The idea in words plus the formal version**: plain explanation first, then the math.
+4. **Hyperparameters lab**: sliders and controls to see how each setting changes the result.
+5. **Compare**: put the method side by side with a related one.
+6. **Pitfalls**: common mistakes and failure modes.
+7. **Check yourself**: a few questions with answers.
+8. **Code**: a short, runnable snippet.
+9. **Cheat sheet box**: a boxed summary of the key points to remember.
