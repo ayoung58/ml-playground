@@ -68,7 +68,9 @@ export default function TraceStepper() {
   };
 
   return (
-    <div className="trace-stepper" style={{ margin: '1rem 0' }}>
+    // `not-content` opts out of Starlight's markdown spacing, which would otherwise add
+    // margin-top to every button that follows another button and misalign the row.
+    <div className="trace-stepper not-content" style={{ margin: '1rem 0' }}>
       <style>{CSS}</style>
 
       <label htmlFor={inputId} style={{ color: 'var(--sl-color-text)' }}>

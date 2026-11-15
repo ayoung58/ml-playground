@@ -1,0 +1,19 @@
+---
+// Wraps Starlight's default site title and puts the sidebar toggle in front of it.
+import Default from '@astrojs/starlight/components/SiteTitle.astro';
+import PanelToggle from './PanelToggle.astro';
+---
+
+<div class="title-row">
+  <PanelToggle panel="sidebar" />
+  <Default {...Astro.props}><slot /></Default>
+</div>
+
+<style>
+  .title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+</style>

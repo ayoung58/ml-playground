@@ -104,7 +104,8 @@ export default function ScatterDemo({
   const reseed = () => setSeed(Math.floor(Math.random() * 2 ** 31));
 
   return (
-    <div style={{ margin: '1rem 0' }}>
+    // `not-content` opts out of Starlight's markdown spacing (it would push Reseed below the slider).
+    <div className="not-content" style={{ margin: '1rem 0' }}>
       <div ref={containerRef} style={{ width: '100%' }}>
         <canvas
           ref={canvasRef}

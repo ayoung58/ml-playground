@@ -12,6 +12,25 @@ export default defineConfig({
     starlight({
       title: 'ML Playground',
       customCss: ['katex/dist/katex.min.css', './src/styles/custom.css'],
+      // Wrap Starlight's defaults to add the collapse buttons for the sidebar and "On this page".
+      components: {
+        SiteTitle: './src/components/starlight/SiteTitle.astro',
+        SocialIcons: './src/components/starlight/SocialIcons.astro',
+      },
+      head: [
+        {
+          // Restore the saved panel state before first paint so there is no layout flash.
+          // Keys and attribute names must match src/components/starlight/PanelToggle.astro.
+          tag: 'script',
+          content: [
+            'try{',
+            "var r=document.documentElement;",
+            "if(localStorage.getItem('ml-sidebar-collapsed')==='true')r.setAttribute('data-sidebar-collapsed','');",
+            "if(localStorage.getItem('ml-toc-collapsed')==='true')r.setAttribute('data-toc-collapsed','');",
+            '}catch(e){}',
+          ].join(''),
+        },
+      ],
       sidebar: [
         { label: 'Start here', items: [{ slug: 'index' }] },
         { label: 'Foundations', items: [{ autogenerate: { directory: 'foundations' } }] },

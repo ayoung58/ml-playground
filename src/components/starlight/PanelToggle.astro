@@ -1,0 +1,140 @@
+---
+/**
+ * Header button that collapses/expands a side panel on desktop.
+ *
+ * State lives in two places that must stay in sync:
+ *  - an attribute on <html> (`data-sidebar-collapsed` / `data-toc-collapsed`), which the CSS in
+ *    src/styles/custom.css reacts to;
+ *  - localStorage, so the choice survives navigation. The inline <head> script in astro.config.mjs
+ *    restores the attribute before first paint, which avoids a flash of the wrong layout.
+ */
+interface Props {
+  panel: 'sidebar' | 'toc';
+}
+
+const { panel } = Astro.props;
+const label = panel === 'sidebar' ? 'Toggle sidebar' : 'Toggle table of contents';
+// Starlight gives the left sidebar this id; the "On this page" panel has none.
+const controls = panel === 'sidebar' ? 'starlight__sidebar' : undefined;
+---
+
+<button
+  type="button"
+  class="panel-toggle"
+  data-panel={panel}
+  aria-label={label}
+  aria-controls={controls}
+  aria-expanded="true"
+  title={label}
+>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+    <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+    {
+      panel === 'sidebar' ? (
+        <>
+          <path d="M9 4v16"></path>
+          <path class="pane" d="M5 4h4v16H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" fill="currentColor" stroke="none"></path>
+        </>
+      ) : (
+        <>
+          <path d="M15 4v16"></path>
+          <path class="pane" d="M19 4h-4v16h4a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z" fill="currentColor" stroke="none"></path>
+        </>
+      )
+    }
+  </svg>
+</button>
+
+<style>
+  .panel-toggle {
+    /* Hidden by default; shown only where that panel actually exists (see media queries below). */
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 0.375rem;
+    background: transparent;
+    color: var(--sl-color-gray-2);
+    cursor: pointer;
+  }
+  .panel-toggle:hover {
+    color: var(--sl-color-white);
+    background: var(--sl-color-gray-6);
+  }
+  .panel-toggle:focus-visible {
+    outline: 2px solid var(--sl-color-accent);
+    outline-offset: 2px;
+  }
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+  /* The filled strip shows the panel is open; it disappears when the panel is collapsed. */
+  .pane {
+    opacity: 0.4;
+  }
+  .panel-toggle[aria-expanded='false'] .pane {
+    opacity: 0;
+  }
+
+  /* Left sidebar is permanent from 50em up; below that Starlight uses its own mobile menu. */
+  @media (min-width: 50em) {
+    :global(html[data-has-sidebar]) .panel-toggle[data-panel='sidebar'] {
+      display: inline-flex;
+    }
+  }
+  /* "On this page" is a side panel from 72em up; below that it becomes a dropdown. */
+  @media (min-width: 72em) {
+    :global(html[data-has-toc]) .panel-toggle[data-panel='toc'] {
+      display: inline-flex;
+    }
+  }
+</style>
+
+<script>
+  type Panel = 'sidebar' | 'toc';
+
+  // Keep these in sync with the inline restore script in astro.config.mjs.
+  const ATTRIBUTE: Record<Panel, string> = {
+    sidebar: 'data-sidebar-collapsed',
+    toc: 'data-toc-collapsed',
+  };
+  const STORAGE_KEY: Record<Panel, string> = {
+    sidebar: 'ml-sidebar-collapsed',
+    toc: 'ml-toc-collapsed',
+  };
+
+  const root = document.documentElement;
+  const buttons = document.querySelectorAll<HTMLButtonElement>('button.panel-toggle[data-panel]');
+
+  const panelOf = (button: HTMLButtonElement): Panel =>
+    button.dataset.panel === 'toc' ? 'toc' : 'sidebar';
+
+  /** Reflect the current <html> state in every toggle button's aria-expanded. */
+  function syncButtons(): void {
+    for (const button of buttons) {
+      const collapsed = root.hasAttribute(ATTRIBUTE[panelOf(button)]);
+      button.setAttribute('aria-expanded', String(!collapsed));
+    }
+  }
+
+  for (const button of buttons) {
+    button.addEventListener('click', () => {
+      const panel = panelOf(button);
+      // toggleAttribute returns true when the attribute is now present, i.e. the panel is collapsed.
+      const collapsed = root.toggleAttribute(ATTRIBUTE[panel]);
+      try {
+        localStorage.setItem(STORAGE_KEY[panel], String(collapsed));
+      } catch {
+        // Storage can be unavailable (private mode); the toggle still works for this page view.
+      }
+      syncButtons();
+    });
+  }
+
+  syncButtons();
+</script>

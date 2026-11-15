@@ -1,0 +1,9 @@
+---
+// Starlight renders this slot in the header's right-hand group, next to the theme picker.
+// We keep the default (social links, none configured today) and add the "On this page" toggle.
+import Default from '@astrojs/starlight/components/SocialIcons.astro';
+import PanelToggle from './PanelToggle.astro';
+---
+
+<PanelToggle panel="toc" />
+<Default {...Astro.props}><slot /></Default>

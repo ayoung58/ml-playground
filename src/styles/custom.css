@@ -1,5 +1,41 @@
 /* Site-wide overrides. Use Starlight's --sl-color-* variables so light and dark mode both work. */
 
+/*
+ * Collapsible side panels. The toggle buttons (src/components/starlight/PanelToggle.astro) set
+ * data-sidebar-collapsed / data-toc-collapsed on <html>. Starlight positions everything from a few
+ * CSS variables, so we hide the panel and zero the variables that reserve room for it.
+ */
+
+/* Left navigation sidebar (permanent layout from 50em; below that it is the mobile menu). */
+@media (min-width: 50em) {
+  html[data-sidebar-collapsed][data-has-sidebar] {
+    /* The main column normally starts after the sidebar; let it start at the left edge. */
+    --sl-content-inline-start: 0px;
+    /* Starlight's header grid reserves space for the sidebar via this private variable. It is
+       cosmetic only (keeps the search box aligned with the content), so a rename upstream is harmless. */
+    --__sidebar-pad: 0rem;
+  }
+  html[data-sidebar-collapsed] .sidebar-pane {
+    display: none;
+  }
+}
+
+/* Right "On this page" panel (side panel from 72em; below that it is a dropdown). */
+@media (min-width: 72em) {
+  html[data-toc-collapsed][data-has-toc] {
+    --__toc-width: 0rem; /* cosmetic, same as above */
+  }
+  html[data-toc-collapsed] .right-sidebar-container {
+    display: none;
+  }
+  /* Starlight sizes the main pane to leave room for the TOC and pushes content against it.
+     With the TOC gone, use the full width and center the content. */
+  html[data-toc-collapsed][data-has-sidebar][data-has-toc] .main-pane {
+    width: 100%;
+    --sl-content-margin-inline: auto;
+  }
+}
+
 /* Keep KaTeX display math from overflowing narrow screens. */
 .katex-display {
   overflow-x: auto;
